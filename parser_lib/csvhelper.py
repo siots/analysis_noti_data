@@ -41,6 +41,8 @@ def export(std_table, filepath, csv_format):
 def write_csvfile(csvfile, value):
     if type(value) is float or type(value) is int:
         csvfile.write(str(value))
+    elif type(value) is type(datetime.now()):
+        csvfile.write(str(value.strftime('%Y-%m-%d %H:%M:%S')))
     elif type(value) is unicode:
         csvfile.write(value.replace(",", "，".decode("utf-8")).replace("\n", " ").replace("(", "[").replace(")", "]"))
     else:
@@ -58,6 +60,7 @@ def export_std_dict(std_dict, filepath, printable=False):
 
         csvfile.write("count screen (noti)-on , ")
         write_csvfile(csvfile, std_dict[stdtable.f_dict_screen_on])
+        csvfile.write("\n")
         csvfile.write("count screen (noti-on)-off , ")
         write_csvfile(csvfile, std_dict[stdtable.f_dict_screen_off])
         csvfile.write("\n"+"count screen unlock immediately , ")
@@ -67,24 +70,28 @@ def export_std_dict(std_dict, filepath, printable=False):
         # --------
 
         csvfile.write("\n")
-        write_csvfile(csvfile, "노티 이후 전체 어플리케이션 리스트")
+        write_csvfile(csvfile, "노티 이후 실행된 앱 리스트(noti - unlock - run)")
         csvfile.write("\n")
-        csvfile.write("appname, interval(sec), noti time, app usage time\n")
+        csvfile.write("appname, interval(sec), noti time, app usage time, contents, app use durations\n")
 
         list_of_dict = std_dict[stdtable.f_dict_list_run]
         sum_of_items = 0
         limit_sec = 60
         count_limit = 0
+        count_within_limit_list = []
         for row in list_of_dict:
-            if printable :
-                print row[0], row[1]
-            for col in row :
+            for col in row:
+                if printable:
+                    print col,
                 write_csvfile(csvfile, col)
                 csvfile.write(", ")
             csvfile.write("\n")
             sum_of_items += row[1]
+            if printable:
+                print "\n"
             if row[1] < limit_sec:
                 count_limit += 1
+                count_within_limit_list.append(row)
 
         if printable :
             print "total count : ", len(list_of_dict), "avg : ", 0 if len(list_of_dict) == 0 else sum_of_items/len(list_of_dict)
@@ -106,30 +113,39 @@ def export_std_dict(std_dict, filepath, printable=False):
         csvfile.write(" seconds, ")
         write_csvfile(csvfile, count_limit)
         csvfile.write("\n")
-
+        csvfile.write("appname, interval(sec), noti time, app usage time, contents, app use durations\n")
+        for row in count_within_limit_list:
+            for col in row:
+                if printable:
+                    print col,
+                write_csvfile(csvfile, col)
+                csvfile.write(", ")
+            if printable:
+                print "\n"
+            csvfile.write("\n")
 
         csvfile.write("\n")
         csvfile.write("\n")
-        write_csvfile(csvfile, "노티 이후 실행된 앱 리스트(noti - unlock - run")
+        write_csvfile(csvfile, "노티 이후 실행된 어플리케이션 리스트(screen on인 경우)")
         csvfile.write("\n")
-        csvfile.write("appname, interval(sec)\n")
+        csvfile.write("appname, interval(sec), noti time, app usage time, contents, app use durations\n")
 
-        list_of_dict = std_dict[stdtable.f_dict_list_run_all]
+        list_of_dict = std_dict[stdtable.f_dict_list_run_on]
         sum_of_items = 0
         limit_sec = 60
         count_limit = 0
+        count_within_limit_list = []
         for row in list_of_dict:
-            if printable :
-                print row[0], row[1]
-
-            write_csvfile(csvfile, row[0])
-            csvfile.write(", ")
-            write_csvfile(csvfile, row[1])
+            for col in row:
+                if printable:
+                    print col,
+                write_csvfile(csvfile, col)
+                csvfile.write(", ")
             csvfile.write("\n")
-
             sum_of_items += row[1]
             if row[1] < limit_sec:
                 count_limit += 1
+                count_within_limit_list.append(row)
 
         if printable :
             print "total count : ", len(list_of_dict), "avg : ", 0 if len(list_of_dict) == 0 else sum_of_items/len(list_of_dict)
@@ -146,3 +162,66 @@ def export_std_dict(std_dict, filepath, printable=False):
         write_csvfile(csvfile, limit_sec)
         csvfile.write("seconds , ")
         write_csvfile(csvfile, count_limit)
+        csvfile.write("\n")
+        csvfile.write("appname, interval(sec), noti time, app usage time, contents, app use durations\n")
+        for row in count_within_limit_list:
+            for col in row:
+                if printable:
+                    print col,
+                write_csvfile(csvfile, col)
+                csvfile.write(", ")
+            if printable:
+                print "\n"
+            csvfile.write("\n")
+
+
+        csvfile.write("\n")
+        csvfile.write("\n")
+        write_csvfile(csvfile, "노티 이후 실행된 전체 어플리케이션 리스트(screen on, off 상관 없이)")
+        csvfile.write("\n")
+        csvfile.write("appname, interval(sec), noti time, app usage time, contents, app use durations\n")
+
+        list_of_dict = std_dict[stdtable.f_dict_list_run_all]
+        sum_of_items = 0
+        limit_sec = 60
+        count_limit = 0
+        count_within_limit_list = []
+        for row in list_of_dict:
+            for col in row:
+                if printable:
+                    print col,
+                write_csvfile(csvfile, col)
+                csvfile.write(", ")
+            csvfile.write("\n")
+            sum_of_items += row[1]
+            if row[1] < limit_sec:
+                count_limit += 1
+                count_within_limit_list.append(row)
+
+        if printable :
+            print "total count : ", len(list_of_dict), "avg : ", 0 if len(list_of_dict) == 0 else sum_of_items/len(list_of_dict)
+            print "count under ", limit_sec, "seconds : ", count_limit
+
+        csvfile.write("\n")
+        csvfile.write("total count , ")
+        write_csvfile(csvfile, len(list_of_dict))
+        csvfile.write("\n")
+        csvfile.write("avg , ")
+        write_csvfile(csvfile, 0 if len(list_of_dict) == 0 else sum_of_items/len(list_of_dict))
+        csvfile.write("\n")
+        csvfile.write("count under ")
+        write_csvfile(csvfile, limit_sec)
+        csvfile.write("seconds , ")
+        write_csvfile(csvfile, count_limit)
+        csvfile.write("\n")
+        csvfile.write("appname, interval(sec), noti time, app usage time, contents, app use durations\n")
+
+        for row in count_within_limit_list:
+            for col in row:
+                if printable:
+                    print col,
+                write_csvfile(csvfile, col)
+                csvfile.write(", ")
+            if printable:
+                print "\n"
+            csvfile.write("\n")
