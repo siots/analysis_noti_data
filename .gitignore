@@ -60,3 +60,13 @@ target/
 
 #Ipython Notebook
 .ipynb_checkpoints
+
+# IDE
+.idea
+
+# data directory
+export/
+data/
+doc/
+*.zip
+*.csv
