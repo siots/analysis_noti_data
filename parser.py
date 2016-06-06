@@ -34,17 +34,26 @@ def stdTableSort(stdTable, date):
 
 
 
-def exportDataSet(date, std_table, export_path):
-    table_manager.print_table(std_table)
-    # exportCountBetweenRun(sort_std, export_path)
-    # csvhelper.export(sort_std, export_path+"data.csv", 'app name, app name[type], screen_status, noti_contents, time_date, time_seconds, duration_sec, type')
+def exportDataSet(date, sort_std, export_path):
+    exportCountBetweenRun(sort_std, export_path)
+    csvhelper.export(sort_std, export_path+"data.csv", 'app name, app name[type], screen_status, noti_contents, time_date, time_seconds, duration_sec, type')
 
 
 def main():
-    # dir = "jimyo/"
-    dir = "june/"
+    dir = "jimyo/"
+    # dir = "june/"
+    sday = 20
+    eday = 24
+
+    dir = "mom/"
+    sday = 15
+    eday = 18
+    # dir = "daniel/"
+    # sday = 18
+    # eday = 21
+
     path = "./data/"+dir
-    for day in range(20, 24):
+    for day in range(sday, eday):
         date = "2016-05-"+str(day)
         export_path = "./export/"+dir+date+"/"
         csv_list1, csv_list2, csv_list3 = getRawDataSet(path)
@@ -53,8 +62,8 @@ def main():
         sorted_table = stdTableSort(std, date)
 
         # I don't wanna export this function. not yet.
-        # applicationmanager.getDefaultAppInfo(csv_list1, csv_list2, csv_list3,export_path+"common_app_list.txt")
-        # exportDataSet(date, std, export_path)
+        applicationmanager.getDefaultAppInfo(csv_list1, csv_list2, csv_list3,export_path+"common_app_list.txt")
+        exportDataSet(date, sorted_table, export_path)
 
         d = stdtable.get_after_noti_data(sorted_table)
         csvhelper.export_std_dict(d, export_path+"analysis.csv")
