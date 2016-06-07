@@ -35,6 +35,7 @@ def stdTableSort(stdTable, date):
 
 
 def exportDataSet(date, sort_std, export_path):
+    sort_std = stdtable.sort_by_appname(sort_std)
     exportCountBetweenRun(sort_std, export_path)
     csvhelper.export(sort_std, export_path+"data.csv", 'app name, app name[type], screen_status, noti_contents, time_date, time_seconds, duration_sec, type')
 
