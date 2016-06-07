@@ -6,17 +6,23 @@ from operator import itemgetter
 APP_NAME = 0
 APP_NAME_TYPE = 1
 SCREEN_STATUS = 2
-NOTI_CONTENTS = 3
-TIME_DATE = 4
-TIME_SECONDS = 5
-DURATION_SEC = 6
-TYPE = 7
+NOTI_TITLE = 3
+NOTI_CONTENTS = 4
+TIME_DATE = 5
+TIME_SECONDS = 6
+DURATION_SEC = 7
+TYPE = 8
 
 TYPE_APPUSAGE = "appusage"
 TYPE_SAVER = "noti_saver"
 TYPE_PRO = "noti_pro"
 TYPE_EVENTLOG = "event"
 TYPE_NOTI = "noti"
+
+NORMAL = 0
+MOM = 1
+EU = 2
+mode = EU
 
 def std_table_app_usage(csv_list):
     std_table = []
@@ -27,9 +33,13 @@ def std_table_app_usage(csv_list):
         row_list.append(appname+"["+TYPE_APPUSAGE+"]")
         row_list.append("")
         row_list.append("")
-        # format_time = dateformatter.format_time_event_logger(csv_list[num][1].decode("utf-8"))
-        format_time = dateformatter.format_time_another(csv_list[num][1].decode("utf-8"))
-        # format_time = dateformatter.format_time_app_usage_eu(csv_list[num][1].decode("utf-8"))
+        row_list.append("")
+        if mode == NORMAL :
+            format_time = dateformatter.format_time_event_logger(csv_list[num][1].decode("utf-8"))
+        elif mode == MOM:
+            format_time = dateformatter.format_time_another(csv_list[num][1].decode("utf-8"))
+        elif mode == EU:
+            format_time = dateformatter.format_time_app_usage_eu(csv_list[num][1].decode("utf-8"))
         row_list.append(format_time)
         sec = dateformatter.formatdate_to_sec(format_time)
         row_list.append(sec)
@@ -48,11 +58,13 @@ def std_table_event_logger(csv_list):
         row_list.append("")
         row_list.append(applicationmanager.convert_eventlogger(csv_list[num][2]))
         row_list.append("")
+        row_list.append("")
 
-        format_time = dateformatter.format_time_event_logger(csv_list[num][1].decode("utf-8"))
-
+        if mode == NORMAL or mode == MOM:
+            format_time = dateformatter.format_time_event_logger(csv_list[num][1].decode("utf-8"))
+        elif mode == EU:
+            format_time = dateformatter.format_time_event_logger_eu(csv_list[num][1].decode("utf-8"))
         # for daniel
-        # format_time = dateformatter.format_time_event_logger_eu(csv_list[num][1].decode("utf-8"))
 
 
         row_list.append(format_time)
@@ -73,6 +85,7 @@ def std_table_pro(csv_list):
         row_list.append(appname)
         row_list.append(appname + "[noti_pro]")
         row_list.append("")
+        row_list.append(csv_list[num][2].decode("utf-8"))
         row_list.append(csv_list[num][3].decode("utf-8"))
         format_time = dateformatter.format_time_hn(csv_list[num][4].decode("utf-8"))
         row_list.append(format_time)
@@ -91,9 +104,13 @@ def std_table_saver(csv_list):
         row_list.append(appname)
         row_list.append(appname + "[noti_saver]")
         row_list.append("")
+        row_list.append(csv_list[num][4].decode("utf-8"))
         row_list.append(csv_list[num][5].decode("utf-8"))
-        format_time = dateformatter.format_time_event_logger(csv_list[num][2].decode("utf-8"))
-        # format_time = dateformatter.format_time_event_logger_eu(csv_list[num][2].decode("utf-8"))
+
+        if mode == NORMAL or mode == MOM:
+            format_time = dateformatter.format_time_event_logger(csv_list[num][2].decode("utf-8"))
+        elif mode == EU:
+            format_time = dateformatter.format_time_event_logger_eu(csv_list[num][2].decode("utf-8"))
         row_list.append(format_time)
         row_list.append(dateformatter.formatdate_to_sec(format_time))
         row_list.append("")
@@ -175,6 +192,7 @@ def count_between_run(sort_list):
 
 
 f_dict_screen_on = "screen_on"
+f_dict_count_noti = "count_noti"
 f_dict_screen_off = "screen_off"
 f_dict_screen_unlock = "screen_unlock"
 f_dict_list_run = "list_run"
@@ -212,6 +230,7 @@ def get_after_noti_data(std_table, usewhitelist=False):
     notilist_on = []
     countOn = 0
     countOff = 0
+    countNoti = 0
     flagOn = False
     flagOff = False
 
@@ -233,22 +252,22 @@ def get_after_noti_data(std_table, usewhitelist=False):
         if rows[TYPE] == TYPE_NOTI and (not usewhitelist or applicationmanager.contains_whitelist(rows[APP_NAME])):
             notilist_on.append([rows[APP_NAME], rows[TIME_SECONDS]])
             notilist_unlock.append([rows[APP_NAME], rows[TIME_SECONDS]])
+            countNoti += 1
             # print rows[APP_NAME], applicationmanager.contains_whitelist(rows[APP_NAME]), not usewhitelist or applicationmanager.contains_whitelist(rows[APP_NAME])
             if contains_appname_index_countlist(notilist_need_run, rows[APP_NAME]) < 0:
                 # print rows[APP_NAME], "------------------------"
-                notilist_need_run.append([rows[APP_NAME], rows[TIME_SECONDS], rows[TIME_DATE], rows[NOTI_CONTENTS]])
+                notilist_need_run.append([rows[APP_NAME], rows[TIME_SECONDS], rows[TIME_DATE], rows[NOTI_CONTENTS], rows[NOTI_TITLE]])
 
             if contains_appname_index_countlist(notilist_need_run_anyway, rows[APP_NAME]) < 0:
-                notilist_need_run_anyway.append([rows[APP_NAME], rows[TIME_SECONDS], rows[TIME_DATE], rows[NOTI_CONTENTS]])
+                notilist_need_run_anyway.append([rows[APP_NAME], rows[TIME_SECONDS], rows[TIME_DATE], rows[NOTI_CONTENTS], rows[NOTI_TITLE]])
 
             if contains_appname_index_countlist(notilist_run_when_on, rows[APP_NAME]) < 0:
-                notilist_run_when_on.append([rows[APP_NAME], rows[TIME_SECONDS], rows[TIME_DATE], rows[NOTI_CONTENTS]])
+                notilist_run_when_on.append([rows[APP_NAME], rows[TIME_SECONDS], rows[TIME_DATE], rows[NOTI_CONTENTS], rows[NOTI_TITLE]])
                 # print "in : ", rows[APP_NAME]
 
             #on
         elif rows[TYPE] == TYPE_EVENTLOG and rows[SCREEN_STATUS] == applicationmanager.eventlogger_table()[0]:
             flagOff = True
-            flagOn = True
             del notilist_run_when_on[:]
             countOn += 1
             if(len(notilist_unlock) > 0):
@@ -267,6 +286,7 @@ def get_after_noti_data(std_table, usewhitelist=False):
             countOnUnlock += 1
             # if flagUnlock:
             flagRun = True
+            flagOn = True
             # print "flag run time", rows[TIME_DATE]
             flagUnlock = False
             if rows[TIME_SECONDS] - notilist_unlock[0][1] < 60:
@@ -281,19 +301,19 @@ def get_after_noti_data(std_table, usewhitelist=False):
             # print "run at time : ", index, "|", rows[TIME_DATE], "|", rows[APP_NAME], contains_appname_index_countlist(notilist_need_run, rows[APP_NAME]) >= 0 and (not usewhitelist or applicationmanager.contains_whitelist(rows[APP_NAME]))
             if index >= 0:
                 if flagRun:
-                    app_count_list_run.append([notilist_need_run[index][0], rows[TIME_SECONDS] - notilist_need_run[index][1], notilist_need_run[index][2], rows[TIME_DATE], notilist_need_run[index][3], rows[DURATION_SEC]])
+                    app_count_list_run.append([notilist_need_run[index][0], rows[TIME_SECONDS] - notilist_need_run[index][1], notilist_need_run[index][2], rows[TIME_DATE], notilist_need_run[index][4], notilist_need_run[index][3], rows[DURATION_SEC]])
                     flagRun = False
                     del notilist_need_run[index]
 
             index = contains_appname_index_countlist(notilist_need_run_anyway, rows[APP_NAME])
             if index >= 0:
-                app_count_list_run_anyway.append([notilist_need_run_anyway[index][0], rows[TIME_SECONDS] - notilist_need_run_anyway[index][1], notilist_need_run_anyway[index][2], rows[TIME_DATE], notilist_need_run_anyway[index][3], rows[DURATION_SEC]])
+                app_count_list_run_anyway.append([notilist_need_run_anyway[index][0], rows[TIME_SECONDS] - notilist_need_run_anyway[index][1], notilist_need_run_anyway[index][2], rows[TIME_DATE], notilist_need_run_anyway[index][4], notilist_need_run_anyway[index][3], rows[DURATION_SEC]])
                 del notilist_need_run_anyway[index]
 
             index = contains_appname_index_countlist(notilist_run_when_on, rows[APP_NAME])
             if index >= 0:
                 if flagOn:
-                    app_count_list_run_on.append([notilist_run_when_on[index][0], rows[TIME_SECONDS] - notilist_run_when_on[index][1], notilist_run_when_on[index][2], rows[TIME_DATE], notilist_run_when_on[index][3], rows[DURATION_SEC]])
+                    app_count_list_run_on.append([notilist_run_when_on[index][0], rows[TIME_SECONDS] - notilist_run_when_on[index][1], notilist_run_when_on[index][2], rows[TIME_DATE], notilist_run_when_on[index][4], notilist_run_when_on[index][3], rows[DURATION_SEC]])
                     del notilist_run_when_on[index]
                     flagOn = False
 
@@ -310,8 +330,9 @@ def get_after_noti_data(std_table, usewhitelist=False):
 
     count_dict = dict()
     count_dict[f_dict_screen_on] = countOn
+    count_dict[f_dict_count_noti] = countNoti
     count_dict[f_dict_screen_off] = countOff
-    count_dict[f_dict_screen_unlock] = countOnUnlockImmediately
+    count_dict[f_dict_screen_unlock] = countOnUnlock
     count_dict[f_dict_list_run] = app_count_list_run
     count_dict[f_dict_list_run_on] = app_count_list_run_on
     count_dict[f_dict_list_run_all] = app_count_list_run_anyway
