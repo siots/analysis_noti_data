@@ -35,10 +35,9 @@ def stdTableSort(stdTable, date):
 
 
 def exportDataSet(date, sort_std, export_path):
+    csvhelper.export(sort_std, export_path+"data.csv", 'app name, app name[type], screen_status, noti_title, noti_contents, time_date, time_seconds, duration_sec, type')
     sort_std = stdtable.sort_by_appname(sort_std)
     exportCountBetweenRun(sort_std, export_path)
-    csvhelper.export(sort_std, export_path+"data.csv", 'app name, app name[type], screen_status, noti_contents, time_date, time_seconds, duration_sec, type')
-
 
 def main():
     dir = "jimyo/"
@@ -62,6 +61,7 @@ def main():
         au = stdtable.std_table_app_usage(csv_list1)
         std = stdtable.get_standard_table(au, stdtable.std_table_event_logger(csv_list2), stdtable.std_table_saver(csv_list3))
         sorted_table = stdTableSort(std, date)
+        print len(sorted_table)
 
         # I don't wanna export this function. not yet.
         applicationmanager.getDefaultAppInfo(csv_list1, csv_list2, csv_list3,export_path+"common_app_list.txt")
