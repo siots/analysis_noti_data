@@ -43,12 +43,13 @@ def exportDataSet(date, sort_std, export_path):
 def main():
     dir = "jimyo/"
     # dir = "june/"
+    dir = "sss/"
     sday = 20
     eday = 24
 
-    dir = "mom/"
-    sday = 15
-    eday = 18
+    # dir = "mom/"
+    # sday = 15
+    # eday = 18
     # dir = "daniel/"
     # sday = 18
     # eday = 21
