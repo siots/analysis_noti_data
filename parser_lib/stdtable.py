@@ -22,7 +22,7 @@ TYPE_NOTI = "noti"
 NORMAL = 0
 MOM = 1
 EU = 2
-mode = EU
+mode = MOM
 
 def std_table_app_usage(csv_list):
     std_table = []
@@ -128,7 +128,8 @@ def get_standard_table(au, el, nh):
 
 
 def sort_std_table(std_table):
-    std_table.sort(key=itemgetter(TIME_DATE))
+    std_table.sort(key=(lambda x: x[TYPE]), reverse=True)
+    std_table.sort(key=(lambda x: x[TIME_DATE]))
     return std_table
 
 
@@ -161,7 +162,7 @@ def count_application(std_table):
 
 def contains_count_table(appname, count_table):
     for num in range(len(count_table)):
-        if appname == count_table[num][0]:
+        if appname == count_table[num][APP_NAME]:
             return num
     return -1
 
