@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from parser_lib import table_manager, csvhelper, stdtable, applicationmanager, dateformatter
+from parser_lib import table_manager, csvhelper, stdtable, applicationmanager, dateformatter, timeslice
 import codecs
 import datetime
 
@@ -63,21 +63,17 @@ def export_file():
         saver = stdtable.std_table_saver(csv_list3)
         std = stdtable.get_standard_table(au, stdtable.std_table_event_logger(csv_list2), saver)
         sorted_table = stdTableSort(std, date)
+        s = stdtable.append_row_style(sorted_table)
+        s = stdtable.revision_is_sleep(s)
+
         if day == 22:
             # get_ad(saver)
-            s = stdtable.append_row_style(sorted_table)
-            for rows in s:
-                for cols in rows:
-                    print cols, "|",
-                print
-            csvhelper.export(s, "./export/before.csv", 'app name, app name[type], screen_status, noti_title, noti_contents, time_date, time_seconds, duration_sec, type, status, issleep')
-            print "\n\n================================\n\n"
-            s = stdtable.revision_is_sleep(s)
-            for rows in s:
-                for cols in rows:
-                    print cols, "|",
-                print
-            csvhelper.export(s, "./export/after.csv", 'app name, app name[type], screen_status, noti_title, noti_contents, time_date, time_seconds, duration_sec, type, status, issleep')
+            timeslice.timeslice_about_apprun(s)
+            # for rows in s:
+            #     for cols in rows:
+            #         print cols, "|",
+            #     print
+            # csvhelper.export(s, "./export/before.csv", 'app name, app name[type], screen_status, noti_title, noti_contents, time_date, time_seconds, duration_sec, type, status, issleep')
         # else :
         #     return
         # print len(sorted_table)
@@ -86,7 +82,8 @@ def export_file():
         # applicationmanager.getDefaultAppInfo(csv_list1, csv_list2, csv_list3,export_path+"common_app_list.txt")
         # exportDataSet(date, sorted_table, export_path)
         #
-        # d = stdtable.get_after_noti_data(sorted_table)
+        d = stdtable.get_after_noti_data(sorted_table)
+        timeslice.about_noti_run_interval(d[stdtable.f_dict_list_run_all])
         # csvhelper.export_std_dict(d, export_path+"analysis.csv")
 
 def get_ad(std_saver):

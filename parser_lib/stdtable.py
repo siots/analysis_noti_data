@@ -205,7 +205,7 @@ def count_between_run(sort_list):
     return count_list
 
 
-def append_row_style(sorted_list):
+def append_row_style(sorted_list, sleeptime=3600):
     status = 0 # 0 : none, 1 : unlock, 2 : off
     is_sleep = None
     last_app_run = 0
@@ -216,7 +216,7 @@ def append_row_style(sorted_list):
             status = 2
         rows.append(status)
 
-        if last_app_run > 0 and rows[TIME_SECONDS]-last_app_run > 3600:
+        if last_app_run > 0 and rows[TIME_SECONDS]-last_app_run > sleeptime:
             is_sleep = True
         elif last_app_run > 0:
             is_sleep = False
@@ -356,16 +356,6 @@ def get_after_noti_data(std_table, usewhitelist=False):
                     flagOn = False
 
 
-                    # elif rows[TYPE] == TYPE_APPUSAGE and rows[APP_NAME] == "카카오톡":
-                    #     print "others : ", "|", rows[TIME_DATE], "|", rows[APP_NAME], "|", len(notilist_need_run)
-
-    # for item in app_count_list_run:
-    #     print item[0], item[1]
-    # print "app count list run : ", len(app_count_list_run)
-    # for item in app_count_list_run_anyway:
-    #     print item[0], item[1]
-    # print "app count list run : ", len(app_count_list_run_anyway)
-
     count_dict = dict()
     count_dict[f_dict_screen_on] = countOn
     count_dict[f_dict_count_noti] = countNoti
@@ -375,5 +365,4 @@ def get_after_noti_data(std_table, usewhitelist=False):
     count_dict[f_dict_list_run_on] = app_count_list_run_on
     count_dict[f_dict_list_run_all] = app_count_list_run_anyway
 
-    # print countOnUnlockImmediately
     return count_dict
