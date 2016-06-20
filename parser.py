@@ -23,7 +23,7 @@ def exportCountBetweenRun(sorted_std_list, export_path, printable=False):
 def getRawDataSet(data_path):
     csv_list1 = csvhelper.csv_parser(data_path+"AppUsage.csv")
     csv_list2 = csvhelper.csv_parser(data_path+"event_logger.csv")
-    csv_list3 = csvhelper.csv_parser(data_path+"saver1.csv")
+    csv_list3 = csvhelper.csv_parser(data_path+"saver.csv")
     return csv_list1, csv_list2, csv_list3
 
 def stdTableSort(stdTable, date):
@@ -43,7 +43,7 @@ def exportDataSet(date, sort_std, export_path):
 def export_file():
     dir = "jimyo/"
     # dir = "june/"
-    dir = "sss/"
+    # dir = "sss/"
     sday = 20
     eday = 24
 
@@ -61,12 +61,25 @@ def export_file():
         csv_list1, csv_list2, csv_list3 = getRawDataSet(path)
         au = stdtable.std_table_app_usage(csv_list1)
         saver = stdtable.std_table_saver(csv_list3)
-        if day == 20:
-            get_ad(saver)
-        else :
-            return
-        # std = stdtable.get_standard_table(au, stdtable.std_table_event_logger(csv_list2), saver)
-        # sorted_table = stdTableSort(std, date)
+        std = stdtable.get_standard_table(au, stdtable.std_table_event_logger(csv_list2), saver)
+        sorted_table = stdTableSort(std, date)
+        if day == 22:
+            # get_ad(saver)
+            s = stdtable.append_row_style(sorted_table)
+            for rows in s:
+                for cols in rows:
+                    print cols, "|",
+                print
+            csvhelper.export(s, "./export/before.csv", 'app name, app name[type], screen_status, noti_title, noti_contents, time_date, time_seconds, duration_sec, type, status, issleep')
+            print "\n\n================================\n\n"
+            s = stdtable.revision_is_sleep(s)
+            for rows in s:
+                for cols in rows:
+                    print cols, "|",
+                print
+            csvhelper.export(s, "./export/after.csv", 'app name, app name[type], screen_status, noti_title, noti_contents, time_date, time_seconds, duration_sec, type, status, issleep')
+        # else :
+        #     return
         # print len(sorted_table)
         # #
         # # # I don't wanna export this function. not yet.

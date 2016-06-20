@@ -33,6 +33,10 @@ def export(std_table, filepath, csv_format):
                     csvfile.write(str(col))
                 elif type(col) is unicode:
                     csvfile.write(col.replace(",", "，".decode("utf-8")).replace("\n", " ").replace("(", "[").replace(")", "]"))
+                elif type(col) is None or col == None:
+                    csvfile.write(str(col))
+                elif type(col) is bool:
+                    csvfile.write(str(col))
                 else:
                     csvfile.write(col.decode("utf-8").replace(",", "，".decode("utf-8")).replace("\n", " ").replace("(", "[").replace(")", "]"))
                 csvfile.write(", ")

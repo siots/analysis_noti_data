@@ -12,6 +12,8 @@ TIME_DATE = 5
 TIME_SECONDS = 6
 DURATION_SEC = 7
 TYPE = 8
+STATUS = 9
+ISSLEEP = 10
 
 TYPE_APPUSAGE = "appusage"
 TYPE_SAVER = "noti_saver"
@@ -19,10 +21,22 @@ TYPE_PRO = "noti_pro"
 TYPE_EVENTLOG = "event"
 TYPE_NOTI = "noti"
 
+STATUS_WORD_ON = "Screen Turned On"
+STATUS_WORD_OFF = "Screen Turned Off"
+STATUS_WORD_UNLOCK = "Screen Unlocked"
+
+f_dict_screen_on = "screen_on"
+f_dict_count_noti = "count_noti"
+f_dict_screen_off = "screen_off"
+f_dict_screen_unlock = "screen_unlock"
+f_dict_list_run = "list_run"
+f_dict_list_run_on = "list_on"
+f_dict_list_run_all = "list_all"
+
 NORMAL = 0
 MOM = 1
 EU = 2
-mode = MOM
+mode = NORMAL
 
 def std_table_app_usage(csv_list):
     std_table = []
@@ -191,14 +205,37 @@ def count_between_run(sort_list):
     return count_list
 
 
+def append_row_style(sorted_list):
+    status = 0 # 0 : none, 1 : unlock, 2 : off
+    is_sleep = None
+    last_app_run = 0
+    for rows in sorted_list:
+        if rows[SCREEN_STATUS] == STATUS_WORD_UNLOCK:
+            status = 1
+        elif rows[SCREEN_STATUS] == STATUS_WORD_OFF:
+            status = 2
+        rows.append(status)
 
-f_dict_screen_on = "screen_on"
-f_dict_count_noti = "count_noti"
-f_dict_screen_off = "screen_off"
-f_dict_screen_unlock = "screen_unlock"
-f_dict_list_run = "list_run"
-f_dict_list_run_on = "list_on"
-f_dict_list_run_all = "list_all"
+        if last_app_run > 0 and rows[TIME_SECONDS]-last_app_run > 3600:
+            is_sleep = True
+        elif last_app_run > 0:
+            is_sleep = False
+        rows.append(is_sleep)
+        if rows[TYPE] == TYPE_APPUSAGE:
+            last_app_run = rows[TIME_SECONDS]
+
+    return sorted_list
+
+
+def revision_is_sleep(sorted_list_after_style):
+    for rownum in  range(len(sorted_list_after_style)):
+        if sorted_list_after_style[rownum][ISSLEEP] and not sorted_list_after_style[rownum-1][ISSLEEP]:
+            for backword in range(rownum, 0, -1):
+                if sorted_list_after_style[backword][TYPE] == TYPE_APPUSAGE:
+                    break
+                else:
+                    sorted_list_after_style[backword][ISSLEEP] = True
+    return sorted_list_after_style
 
 
 def contains_appname_index_countlist(appname_list, appname):
