@@ -20,9 +20,15 @@ def tutorial():
     )
     data = Data([trace0, trace1])
 
-    py.plot(data, filename='test')
+    layout = Layout(
+        xaxis = dict(title=""),
+        yaxis = dict(title="")
+    )
+    fig = Figure(data=data, layout=layout)
 
-def interval_by_hour(timeslice_dict, chartname="interval_by_hour"):
+    py.plot(fig, filename=chartname)
+
+def interval_by_hour(timeslice_dict, chartname="interval_by_hour.html"):
     datas = []
     for num in range(0, 24):
         h = str(num)
@@ -41,10 +47,15 @@ def interval_by_hour(timeslice_dict, chartname="interval_by_hour"):
             )
             datas.append(trace)
     data = Data(datas)
+    layout = Layout(
+        xaxis = dict(title="hours"),
+        yaxis = dict(title="interval")
+    )
+    fig = Figure(data=data, layout=layout)
 
-    py.plot(data, filename=chartname)
+    py.plot(fig, filename=chartname)
 
-def interval_by_appname(dict_by_appname, chartname="interval_by_appname"):
+def interval_by_appname(dict_by_appname, chartname="interval_by_appname.html"):
     datas = []
     for name in dict_by_appname:
         x = []
@@ -61,11 +72,16 @@ def interval_by_appname(dict_by_appname, chartname="interval_by_appname"):
         )
         datas.append(trace)
     data = Data(datas)
+    layout = Layout(
+        xaxis = dict(title="hours"),
+        yaxis = dict(title="interval")
+    )
+    fig = Figure(data=data, layout=layout)
 
-    py.plot(data, filename=chartname)
+    py.plot(fig, filename=chartname)
 
 
-def interval_count_until_noti(list_run, chartname="interval_count_until_noti"):
+def interval_count_until_noti(list_run, chartname="interval_count_until_noti.html"):
     datas = []
 
     dict_by_appname = dict()
@@ -92,10 +108,16 @@ def interval_count_until_noti(list_run, chartname="interval_count_until_noti"):
         datas.append(trace)
     data = Data(datas)
 
-    py.plot(data, filename=chartname)
+    layout = Layout(
+        xaxis = dict(title="run count"),
+        yaxis = dict(title="interval")
+    )
+    fig = Figure(data=data, layout=layout)
+
+    py.plot(fig, filename=chartname)
 
 
-def interval_duration(list_run, chartname="interval_duration"):
+def interval_duration(list_run, chartname="interval_duration.html"):
     datas = []
 
     dict_by_appname = dict()
@@ -122,11 +144,17 @@ def interval_duration(list_run, chartname="interval_duration"):
         datas.append(trace)
     data = Data(datas)
 
-    py.plot(data, filename=chartname)
+    layout = Layout(
+        xaxis = dict(title="interval"),
+        yaxis = dict(title="duration")
+    )
+    fig = Figure(data=data, layout=layout)
+
+    py.plot(fig, filename=chartname)
 
 
 # need separate each person
-def noti_run_count(count_list, chartname="noti_run_count"):
+def noti_run_count(count_list, chartname="noti_run_count.html"):
     datas=[]
 
     for name in count_list:
@@ -140,4 +168,10 @@ def noti_run_count(count_list, chartname="noti_run_count"):
         datas.append(trace)
     data = Data(datas)
 
-    py.plot(data, filename=chartname)
+    layout = Layout(
+        xaxis = dict(title="noti count"),
+        yaxis = dict(title="run count")
+    )
+    fig = Figure(data=data, layout=layout)
+
+    py.plot(fig, filename=chartname)

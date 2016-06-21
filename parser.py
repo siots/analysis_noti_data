@@ -201,16 +201,29 @@ def get_chart_datas():
 
         noti_count_with_user.update(timeslice.noti_run_count_with_user(std_table, person))
 
-    chartmanager.noti_run_count(noti_count_with_user, "gg")
+    chartmanager.noti_run_count(noti_count_with_user, "noti run count with user name")
 
     ds = timeslice.about_noti_run_interval(noti_analytics_dict_all[stdtable.f_dict_list_run_all])
-    chartmanager.interval_by_hour(ds, "interval_all")
+    chartmanager.interval_by_hour(ds, "interval by hours all")
+    ds = timeslice.about_noti_run_interval(noti_analytics_dict_all[stdtable.f_dict_list_run_on])
+    chartmanager.interval_by_hour(ds, "interval by hours on")
+    ds = timeslice.about_noti_run_interval(noti_analytics_dict_all[stdtable.f_dict_list_run])
+    chartmanager.interval_by_hour(ds, "interval by hours off")
 
+    dd = timeslice.about_interval_with_appname(noti_analytics_dict_all[stdtable.f_dict_list_run_all])
+    chartmanager.interval_by_appname(dd, "interval by hours with appname all")
+    dd = timeslice.about_interval_with_appname(noti_analytics_dict_all[stdtable.f_dict_list_run_on])
+    chartmanager.interval_by_appname(dd, "interval by hours with appname on")
     dd = timeslice.about_interval_with_appname(noti_analytics_dict_all[stdtable.f_dict_list_run])
-    chartmanager.interval_by_appname(dd, "cc")
+    chartmanager.interval_by_appname(dd, "interval by hours with appname off")
 
-    chartmanager.interval_count_until_noti(noti_analytics_dict_all[stdtable.f_dict_list_run_all],"kk")
-    chartmanager.interval_duration(noti_analytics_dict_all[stdtable.f_dict_list_run_all],"ff")
+    chartmanager.interval_count_until_noti(noti_analytics_dict_all[stdtable.f_dict_list_run_all],"interval and noti count until run all")
+    chartmanager.interval_count_until_noti(noti_analytics_dict_all[stdtable.f_dict_list_run_on],"interval and noti count until run on")
+    chartmanager.interval_count_until_noti(noti_analytics_dict_all[stdtable.f_dict_list_run],"interval and noti count until run off")
+
+    chartmanager.interval_duration(noti_analytics_dict_all[stdtable.f_dict_list_run_all],"interval and duration all")
+    chartmanager.interval_duration(noti_analytics_dict_all[stdtable.f_dict_list_run_on],"interval and duration on")
+    chartmanager.interval_duration(noti_analytics_dict_all[stdtable.f_dict_list_run],"interval and duration off")
 
 
 if __name__=="__main__":

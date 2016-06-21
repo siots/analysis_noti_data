@@ -15,7 +15,10 @@ def csv_parser(filename, printable=False):
                         print col.decode('utf-8').encode('utf-8'), '|',
                     elif type(col) is str:
                         print col, '|',
-                row_list.append(col.decode('utf-8').encode('utf-8'))
+                if type(col) is unicode:
+                    row_list.append(col.decode('utf-8').encode('utf-8'))
+                elif type(col) is str:
+                    row_list.append(col)
             if printable :
                 print
             csv_list.append(row_list)
