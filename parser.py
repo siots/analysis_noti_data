@@ -180,7 +180,8 @@ def mkdir(export_path):
     return False
 
 def get_chart_datas():
-    people = ["jimyo"]
+    # people = ["jimyo"]
+    people = ["m", "ss", "jun"]
     std_table_all = []
     noti_analytics_dict_all = dict()
     noti_count_with_user = dict()
