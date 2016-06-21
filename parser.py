@@ -40,6 +40,17 @@ def exportDataSet(date, sort_std, export_path):
     sort_std = stdtable.sort_by_appname(sort_std)
     exportCountBetweenRun(sort_std, export_path)
 
+def get_standard_table(path, date):
+    csv_list1, csv_list2, csv_list3 = getRawDataSet(path)
+    au = stdtable.std_table_app_usage(csv_list1)
+    saver = stdtable.std_table_saver(csv_list3)
+    raw_standard_table = stdtable.get_standard_table(au, stdtable.std_table_event_logger(csv_list2), saver)
+    sorted_table_by_date = stdTableSort(raw_standard_table, date)
+    append_style_standard_table = stdtable.append_row_style(sorted_table_by_date)
+    append_style_standard_table = stdtable.revision_is_sleep(append_style_standard_table)
+
+    return append_style_standard_table
+
 def export_file():
     dir = "jimyo/"
     # dir = "june/"
@@ -58,17 +69,11 @@ def export_file():
     for day in range(sday, eday):
         date = "2016-05-"+str(day)
         export_path = "./export/"+dir+date+"/"
-        csv_list1, csv_list2, csv_list3 = getRawDataSet(path)
-        au = stdtable.std_table_app_usage(csv_list1)
-        saver = stdtable.std_table_saver(csv_list3)
-        std = stdtable.get_standard_table(au, stdtable.std_table_event_logger(csv_list2), saver)
-        sorted_table = stdTableSort(std, date)
-        s = stdtable.append_row_style(sorted_table)
-        s = stdtable.revision_is_sleep(s)
+        std_table = get_standard_table(path, date)
 
         if day == 22:
             # get_ad(saver)
-            ds = timeslice.timeslice_about_apprun(s)
+            ds = timeslice.timeslice_about_apprun(std_table)
             # for rows in s:
             #     for cols in rows:
             #         print cols, "|",
@@ -82,8 +87,8 @@ def export_file():
         # applicationmanager.getDefaultAppInfo(csv_list1, csv_list2, csv_list3,export_path+"common_app_list.txt")
         # exportDataSet(date, sorted_table, export_path)
         #
-            d = stdtable.get_after_noti_data(sorted_table)
-            ds = timeslice.about_noti_run_interval(d[stdtable.f_dict_list_run_all])
+            noti_analytics_dict = stdtable.get_after_noti_data(std_table)
+            ds = timeslice.about_noti_run_interval(noti_analytics_dict[stdtable.f_dict_list_run_all])
             chartmanager.timeslice(ds)
         # csvhelper.export_std_dict(d, export_path+"analysis.csv")
 
