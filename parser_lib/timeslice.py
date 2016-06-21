@@ -3,6 +3,7 @@
 import time
 from datetime import datetime
 from parser_lib import stdtable
+from plotly import plotly
 
 def timeslice_about_apprun(sorted_list):
     """
@@ -33,3 +34,5 @@ def about_noti_run_interval(sorted_list):
         h = "time" + str(num)
         if h in app_list:
             print num, app_list[h]
+
+    return app_list

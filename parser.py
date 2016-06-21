@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from parser_lib import table_manager, csvhelper, stdtable, applicationmanager, dateformatter, timeslice
+from parser_lib import table_manager, csvhelper, stdtable, applicationmanager, dateformatter, timeslice, chartmanager
 import codecs
 import datetime
 
@@ -68,7 +68,7 @@ def export_file():
 
         if day == 22:
             # get_ad(saver)
-            timeslice.timeslice_about_apprun(s)
+            ds = timeslice.timeslice_about_apprun(s)
             # for rows in s:
             #     for cols in rows:
             #         print cols, "|",
@@ -82,8 +82,9 @@ def export_file():
         # applicationmanager.getDefaultAppInfo(csv_list1, csv_list2, csv_list3,export_path+"common_app_list.txt")
         # exportDataSet(date, sorted_table, export_path)
         #
-        d = stdtable.get_after_noti_data(sorted_table)
-        timeslice.about_noti_run_interval(d[stdtable.f_dict_list_run_all])
+            d = stdtable.get_after_noti_data(sorted_table)
+            ds = timeslice.about_noti_run_interval(d[stdtable.f_dict_list_run_all])
+            chartmanager.timeslice(ds)
         # csvhelper.export_std_dict(d, export_path+"analysis.csv")
 
 def get_ad(std_saver):
