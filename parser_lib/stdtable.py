@@ -247,7 +247,7 @@ def contains_appname_index_countlist(appname_list, appname):
     return -1
 
 
-def get_after_noti_data(std_table, usewhitelist=False):
+def get_after_noti_data(std_table, usewhitelist=False, usesleep=False):
     """
         :param
             @ std_table : need to standard table after sort by time.
@@ -287,7 +287,7 @@ def get_after_noti_data(std_table, usewhitelist=False):
 
     for rows in std_table:
 
-        if rows[TYPE] == TYPE_NOTI and (not usewhitelist or applicationmanager.contains_whitelist(rows[APP_NAME])):
+        if rows[TYPE] == TYPE_NOTI and (not usewhitelist or applicationmanager.contains_whitelist(rows[APP_NAME])) and (not usesleep or rows[ISSLEEP] == False):
             notilist_on.append([rows[APP_NAME], rows[TIME_SECONDS]])
             notilist_unlock.append([rows[APP_NAME], rows[TIME_SECONDS]])
             countNoti += 1
