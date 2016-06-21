@@ -3,6 +3,7 @@
 from parser_lib import table_manager, csvhelper, stdtable, applicationmanager, dateformatter, timeslice, chartmanager
 import codecs
 import datetime
+import os
 
 def testcase():
     # table_manager.print_table(stdtable.sort_by_appname(sort_std))
@@ -28,7 +29,8 @@ def getRawDataSet(data_path):
 
 def stdTableSort(stdTable, date):
     sort_std = stdtable.sort_std_table(stdTable)
-    sort_std = stdtable.slice_by_time(sort_std, date)
+    if date is not None:
+        sort_std = stdtable.slice_by_time(sort_std, date)
 
     # sort_std = stdtable.sort_by_appname(sort_std)
     return sort_std
@@ -52,7 +54,8 @@ def get_standard_table(path, date):
     return append_style_standard_table
 
 def export_file():
-    dir = "jimyo/"
+    username = "jimyo"
+    dir = username+"/"
     # dir = "june/"
     # dir = "sss/"
     sday = 20
@@ -69,11 +72,13 @@ def export_file():
     for day in range(sday, eday):
         date = "2016-05-"+str(day)
         export_path = "./export/"+dir+date+"/"
+        date = None
         std_table = get_standard_table(path, date)
 
         if day == 22:
             # get_ad(saver)
-            ds = timeslice.timeslice_about_apprun(std_table)
+            # ds = timeslice.timeslice_about_apprun(std_table)
+            chartmanager.noti_run_count(timeslice.noti_run_count_with_user(std_table, username))
             # for rows in s:
             #     for cols in rows:
             #         print cols, "|",
@@ -87,14 +92,14 @@ def export_file():
         # applicationmanager.getDefaultAppInfo(csv_list1, csv_list2, csv_list3,export_path+"common_app_list.txt")
         # exportDataSet(date, sorted_table, export_path)
         #
-            noti_analytics_dict = stdtable.get_after_noti_data(std_table, usesleep=True)
-            # ds = timeslice.about_noti_run_interval(noti_analytics_dict[stdtable.f_dict_list_run_all])
-            # chartmanager.timeslice(ds)
-            dd = timeslice.about_interval_with_appname(noti_analytics_dict[stdtable.f_dict_list_run_all])
-            for i in dd:
-                print i, dd[i]
-            chartmanager.interval_by_appname(dd)
-        # csvhelper.export_std_dict(d, export_path+"analysis.csv")
+            # noti_analytics_dict = stdtable.get_after_noti_data(std_table, usesleep=True)
+            # # ds = timeslice.about_noti_run_interval(noti_analytics_dict[stdtable.f_dict_list_run_all])
+            # # chartmanager.timeslice(ds)
+            # dd = timeslice.about_interval_with_appname(noti_analytics_dict[stdtable.f_dict_list_run])
+            # chartmanager.interval_by_appname(dd)
+            # # chartmanager.interval_count_until_noti(noti_analytics_dict[stdtable.f_dict_list_run_all])
+            # # chartmanager.interval_duration(noti_analytics_dict[stdtable.f_dict_list_run_all])
+            # # csvhelper.export_std_dict(noti_analytics_dict, export_path+"analysis.csv")
 
 def get_ad(std_saver):
     app_list = []
@@ -167,11 +172,52 @@ def sort_test():
                 print "\t", "|",
         print
 
+
+def mkdir(export_path):
+    if not os.path.exists(export_path):
+        os.makedirs(export_path)
+        return True
+    return False
+
+def get_chart_datas():
+    people = ["jimyo"]
+    std_table_all = []
+    noti_analytics_dict_all = dict()
+    noti_count_with_user = dict()
+
+    for person in people:
+        path = "./data/"+person+"/"
+        export_path = "./export/"+person+"/total"
+        std_table = get_standard_table(path, None)
+        std_table_all.extend(std_table)
+        noti_analytics_dict = stdtable.get_after_noti_data(std_table, usesleep=True)
+        if not stdtable.f_dict_list_run_all in noti_analytics_dict_all:
+            noti_analytics_dict_all.update(noti_analytics_dict)
+        else:
+            noti_analytics_dict_all[stdtable.f_dict_list_run].extend(noti_analytics_dict[stdtable.f_dict_list_run])
+            noti_analytics_dict_all[stdtable.f_dict_list_run_all].extend(noti_analytics_dict[stdtable.f_dict_list_run_all])
+            noti_analytics_dict_all[stdtable.f_dict_list_run_on].extend(noti_analytics_dict[stdtable.f_dict_list_run_on])
+
+        noti_count_with_user.update(timeslice.noti_run_count_with_user(std_table, person))
+
+    chartmanager.noti_run_count(noti_count_with_user, "gg")
+
+    ds = timeslice.about_noti_run_interval(noti_analytics_dict_all[stdtable.f_dict_list_run_all])
+    chartmanager.interval_by_hour(ds, "interval_all")
+
+    dd = timeslice.about_interval_with_appname(noti_analytics_dict_all[stdtable.f_dict_list_run])
+    chartmanager.interval_by_appname(dd, "cc")
+
+    chartmanager.interval_count_until_noti(noti_analytics_dict_all[stdtable.f_dict_list_run_all],"kk")
+    chartmanager.interval_duration(noti_analytics_dict_all[stdtable.f_dict_list_run_all],"ff")
+
+
 if __name__=="__main__":
     # test()
     # print convert_eventlogger("Screen Unlocked")
     # print contains_filter_package("com.buzzpia.aqua.launcher")
-    export_file()
+    # export_file()
+    get_chart_datas()
     # csvhelper.csv_parser("./data/6.1/test.csv", True)
     # time_test()
     # test2()
