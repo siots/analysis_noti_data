@@ -1,9 +1,6 @@
 # -*- coding: utf-8 -*-
 
-import time
-from datetime import datetime
 from parser_lib import stdtable
-from plotly import plotly
 
 def timeslice_about_apprun(sorted_list):
     """
@@ -21,10 +18,11 @@ def timeslice_about_apprun(sorted_list):
 
     return apprun
 
-def about_noti_run_interval(sorted_list):
+
+def about_noti_run_interval(dict_run_all):
     app_list = dict()
-    print "day : ", sorted_list[0][3].day
-    for rows in sorted_list:
+    print "day : ", dict_run_all[0][3].day
+    for rows in dict_run_all:
         h = "time" + str(rows[3].hour)
         if h in app_list:
             app_list[h].append(rows[1])
@@ -35,4 +33,16 @@ def about_noti_run_interval(sorted_list):
         if h in app_list:
             print num, app_list[h]
 
+    return app_list
+
+
+def about_interval_with_appname(dict_run_all):
+    app_list = dict()
+    for rows in dict_run_all:
+        if rows[0] in app_list:
+            app_list[rows[0]].append([rows[3].hour, rows[1]])
+        else:
+            app_list[rows[0]] = [[rows[3].hour, rows[1]]]
+
+    print app_list
     return app_list

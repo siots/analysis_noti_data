@@ -87,9 +87,13 @@ def export_file():
         # applicationmanager.getDefaultAppInfo(csv_list1, csv_list2, csv_list3,export_path+"common_app_list.txt")
         # exportDataSet(date, sorted_table, export_path)
         #
-            noti_analytics_dict = stdtable.get_after_noti_data(std_table)
-            ds = timeslice.about_noti_run_interval(noti_analytics_dict[stdtable.f_dict_list_run_all])
-            chartmanager.timeslice(ds)
+            noti_analytics_dict = stdtable.get_after_noti_data(std_table, usesleep=True)
+            # ds = timeslice.about_noti_run_interval(noti_analytics_dict[stdtable.f_dict_list_run_all])
+            # chartmanager.timeslice(ds)
+            dd = timeslice.about_interval_with_appname(noti_analytics_dict[stdtable.f_dict_list_run_all])
+            for i in dd:
+                print i, dd[i]
+            chartmanager.interval_by_appname(dd)
         # csvhelper.export_std_dict(d, export_path+"analysis.csv")
 
 def get_ad(std_saver):

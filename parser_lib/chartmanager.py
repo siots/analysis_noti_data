@@ -41,3 +41,23 @@ def timeslice(timeslice_dict):
     data = Data(datas)
 
     py.plot(data, filename='test')
+
+def interval_by_appname(dict_by_appname):
+    datas = []
+    for name in dict_by_appname:
+        x = []
+        y = []
+        print name
+        for rows in dict_by_appname[name]:
+            x.append(rows[0])
+            y.append(rows[1])
+        trace = Scatter(
+            x=x,
+            y=y,
+            mode="markers",
+            name=name
+        )
+        datas.append(trace)
+    data = Data(datas)
+
+    py.plot(data, filename='test')
