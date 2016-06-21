@@ -33,6 +33,17 @@ f_dict_list_run = "list_run"
 f_dict_list_run_on = "list_on"
 f_dict_list_run_all = "list_all"
 
+DICT_APPNAME = 0
+DICT_INTERVAL = 1
+DICT_NOTI_TIME = 2
+DICT_RUN_TIME = 3
+DICT_TITLE = 4
+DICT_CONTENTS = 5
+DICT_DURATION = 6
+DICT_NOTI_COUNT = 7
+
+
+
 NORMAL = 0
 MOM = 1
 EU = 2
@@ -287,20 +298,30 @@ def get_after_noti_data(std_table, usewhitelist=False, usesleep=False):
 
     for rows in std_table:
 
+        #noti
         if rows[TYPE] == TYPE_NOTI and (not usewhitelist or applicationmanager.contains_whitelist(rows[APP_NAME])) and (not usesleep or rows[ISSLEEP] == False):
             notilist_on.append([rows[APP_NAME], rows[TIME_SECONDS]])
             notilist_unlock.append([rows[APP_NAME], rows[TIME_SECONDS]])
             countNoti += 1
             # print rows[APP_NAME], applicationmanager.contains_whitelist(rows[APP_NAME]), not usewhitelist or applicationmanager.contains_whitelist(rows[APP_NAME])
-            if contains_appname_index_countlist(notilist_need_run, rows[APP_NAME]) < 0:
+            index_list = contains_appname_index_countlist(notilist_need_run, rows[APP_NAME])
+            if index_list < 0:
                 # print rows[APP_NAME], "------------------------"
-                notilist_need_run.append([rows[APP_NAME], rows[TIME_SECONDS], rows[TIME_DATE], rows[NOTI_CONTENTS], rows[NOTI_TITLE]])
+                notilist_need_run.append([rows[APP_NAME], rows[TIME_SECONDS], rows[TIME_DATE], rows[NOTI_CONTENTS], rows[NOTI_TITLE], 1])
+            else:
+                notilist_need_run[index_list][5] += 1
 
-            if contains_appname_index_countlist(notilist_need_run_anyway, rows[APP_NAME]) < 0:
-                notilist_need_run_anyway.append([rows[APP_NAME], rows[TIME_SECONDS], rows[TIME_DATE], rows[NOTI_CONTENTS], rows[NOTI_TITLE]])
+            index_list = contains_appname_index_countlist(notilist_need_run_anyway, rows[APP_NAME])
+            if index_list < 0:
+                notilist_need_run_anyway.append([rows[APP_NAME], rows[TIME_SECONDS], rows[TIME_DATE], rows[NOTI_CONTENTS], rows[NOTI_TITLE], 1])
+            else:
+                notilist_need_run_anyway[index_list][5] += 1
 
-            if contains_appname_index_countlist(notilist_run_when_on, rows[APP_NAME]) < 0:
-                notilist_run_when_on.append([rows[APP_NAME], rows[TIME_SECONDS], rows[TIME_DATE], rows[NOTI_CONTENTS], rows[NOTI_TITLE]])
+            index_list = contains_appname_index_countlist(notilist_run_when_on, rows[APP_NAME])
+            if index_list < 0:
+                notilist_run_when_on.append([rows[APP_NAME], rows[TIME_SECONDS], rows[TIME_DATE], rows[NOTI_CONTENTS], rows[NOTI_TITLE], 1])
+            else:
+                notilist_run_when_on[index_list][5] += 1
                 # print "in : ", rows[APP_NAME]
 
             #on
@@ -339,19 +360,19 @@ def get_after_noti_data(std_table, usewhitelist=False, usesleep=False):
             # print "run at time : ", index, "|", rows[TIME_DATE], "|", rows[APP_NAME], contains_appname_index_countlist(notilist_need_run, rows[APP_NAME]) >= 0 and (not usewhitelist or applicationmanager.contains_whitelist(rows[APP_NAME]))
             if index >= 0:
                 if flagRun:
-                    app_count_list_run.append([notilist_need_run[index][0], rows[TIME_SECONDS] - notilist_need_run[index][1], notilist_need_run[index][2], rows[TIME_DATE], notilist_need_run[index][4], notilist_need_run[index][3], rows[DURATION_SEC]])
+                    app_count_list_run.append([notilist_need_run[index][0], rows[TIME_SECONDS] - notilist_need_run[index][1], notilist_need_run[index][2], rows[TIME_DATE], notilist_need_run[index][4], notilist_need_run[index][3], rows[DURATION_SEC], notilist_need_run[index][5]])
                     flagRun = False
                     del notilist_need_run[index]
 
             index = contains_appname_index_countlist(notilist_need_run_anyway, rows[APP_NAME])
             if index >= 0:
-                app_count_list_run_anyway.append([notilist_need_run_anyway[index][0], rows[TIME_SECONDS] - notilist_need_run_anyway[index][1], notilist_need_run_anyway[index][2], rows[TIME_DATE], notilist_need_run_anyway[index][4], notilist_need_run_anyway[index][3], rows[DURATION_SEC]])
+                app_count_list_run_anyway.append([notilist_need_run_anyway[index][0], rows[TIME_SECONDS] - notilist_need_run_anyway[index][1], notilist_need_run_anyway[index][2], rows[TIME_DATE], notilist_need_run_anyway[index][4], notilist_need_run_anyway[index][3], rows[DURATION_SEC], notilist_need_run_anyway[index][5]])
                 del notilist_need_run_anyway[index]
 
             index = contains_appname_index_countlist(notilist_run_when_on, rows[APP_NAME])
             if index >= 0:
                 if flagOn:
-                    app_count_list_run_on.append([notilist_run_when_on[index][0], rows[TIME_SECONDS] - notilist_run_when_on[index][1], notilist_run_when_on[index][2], rows[TIME_DATE], notilist_run_when_on[index][4], notilist_run_when_on[index][3], rows[DURATION_SEC]])
+                    app_count_list_run_on.append([notilist_run_when_on[index][0], rows[TIME_SECONDS] - notilist_run_when_on[index][1], notilist_run_when_on[index][2], rows[TIME_DATE], notilist_run_when_on[index][4], notilist_run_when_on[index][3], rows[DURATION_SEC], notilist_run_when_on[index][5]])
                     del notilist_run_when_on[index]
                     flagOn = False
 
